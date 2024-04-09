@@ -5,23 +5,7 @@
  * 3. page rank에 따라서, 더 높은 우선순위를 갖도록
  */
 
-import fs from 'fs';
 import { Crawler } from './Crawler';
-
-interface PageRank {
-    [url: string]: {
-        rank: number;
-    };
-}
-
-
-const pageRank: PageRank = {};
-
-const storeDB = (): void => {
-    console.log("### DB 저장");
-    const json = JSON.stringify(pageRank);
-    fs.writeFileSync('./pageRank.json', json);
-};
 
 const main = async (): Promise<void> => {
     const urlsToCrawl: string[] = [
