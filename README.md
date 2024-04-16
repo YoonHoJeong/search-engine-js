@@ -1,20 +1,30 @@
-# 귀여운 js 검색 엔진
-- [x] base url에서 출발, <a> tags 방문, 태그된 횟수로 pageRank 생성하기
-- [ ] 해당 페이지에서 가장 많이 등장하는 키워드를 저장, 해당 키워드에 대한 pageRank 생성하기
-- [ ] bun + ts
-- [ ] 실제로 크롤링을 하는 g
+# search engine with ts
+1. crawl
+2. data storage
+3. indexing
+4. search algorithm
+5. ranking
 
+## 1. Crawler
+1. 웹 페이지를 방문
+1. html 긁어오기
+1. 다음에 크롤링할 nextUrls 가져오기
 
-1. 크롤링
-  - 알고 있는 페이지에서 시작
-  - robots.txt
-2. 인덱싱
-  - 텍스트, 이미지, 비디오, 페이지 타이틀, meta 데이터 등을 분석
-  - 페이지에 대한 키워드를 저장
-3. Ranking
-  - 사용자가 검색하면, 검색 엔진은 인덱싱 테이블에서 적절한 페이지를 찾는다.
-  - 200여 개의 ranking factor가 있음
-    - Page Rank
+## 2. Data Storage
+- 데이터 CRUD 역할
 
-- 인덱스 테이블 구조
-  1. key - record identifier - additional info (freq, context, updated)
+## 3. Indexing
+- 어떤 정보를 읽어오고,
+- 어떤 방법으로 정보를 Indexing할 것인지
+
+## 4. Search Algorithm
+- 사용자 쿼리에 가장 관련성이 높은 결과 반환하기
+  - TF-IDF, BM25
+
+## 5. Ranking
+- 페이지 순위 매기기
+  - PageRank
+  - 컨텐츠 품질
+
+## Plan
+1. Indexing 방식 리서치
