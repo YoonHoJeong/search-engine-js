@@ -20,26 +20,13 @@ export class CrawlerImpl implements Crawler {
     private isRunning: boolean = false;
     private queue: string[] = [];
     private visitedUrls: Set<string> = new Set();
-
-    private getNextUrls({ origin, html }: { origin: string, html: string }) {
-        const $ = Cheerio.load(html);
-        const links = $('a');
-        const nextUrls: string[] = [];
-        links.each((_, element) => {
-            const href = $(element).attr('href');
-            if (!href) {
-                return;
-            }
-            const absoluteUrl = UrlUtil.getAbsoluteUrl(origin, href);
-            if (absoluteUrl) {
-                nextUrls.push(absoluteUrl)
-            }
-        });
-        return nextUrls
-    }
+    private readonly maxQueueSize: number = 10;
 
     private async crawl() {
         if (!this.isRunning) {
+            return;
+        }
+        if (this.visitedUrls.size > this.maxQueueSize) {
             return;
         }
         const url = this.queue.shift();
@@ -49,14 +36,11 @@ export class CrawlerImpl implements Crawler {
         }
         this.visitedUrls.add(url);
         const html = await fetch(url).then(res => res.text());
-        const nextUrls = this.getNextUrls({
-            origin: url, html
-        });
+        const indexer = new IndexerImpl(url, html);
+        const { nextUrls, indexedData } = indexer.index();
+        console.log(" indexedData", indexedData);
 
         this.queue.push(...nextUrls);
-        const indexer = new IndexerImpl();
-        const index = indexer.index(html);
-        console.log("index size:", index.size);
     }
 
     async startCrawl(): Promise<boolean> {
@@ -65,7 +49,7 @@ export class CrawlerImpl implements Crawler {
         }
         this.isRunning = true;
 
-        while (this.isRunning && !this.isEmpty()) {
+        while (this.isRunning && !this.isEmpty() && this.visitedUrls.size < this.maxQueueSize) {
             await this.crawl();
             console.log("queue size:", this.queue.length);
             console.log("visited size:", this.visitedUrls.size);

@@ -14,8 +14,13 @@
 - 데이터 CRUD 역할
 
 ## 3. Indexing
-- 어떤 정보를 읽어오고,
+- 어떤 정보를 읽어오고
+  1. head > title
+  1. meta > description
+  1. meta > keywords
+  1. headings - h1, h2, h3
 - 어떤 방법으로 정보를 Indexing할 것인지
+- normalize
 
 ## 4. Search Algorithm
 - 사용자 쿼리에 가장 관련성이 높은 결과 반환하기
