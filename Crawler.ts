@@ -37,9 +37,7 @@ export class CrawlerImpl implements Crawler {
         this.visitedUrls.add(url);
         const html = await fetch(url).then(res => res.text());
         const indexer = new IndexerImpl(url, html);
-        const { nextUrls, indexedData } = indexer.index();
-        console.log(" indexedData", indexedData);
-
+        const { nextUrls } = indexer.index();
         this.queue.push(...nextUrls);
     }
 
