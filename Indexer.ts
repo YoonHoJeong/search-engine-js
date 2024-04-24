@@ -13,10 +13,10 @@ export class IndexerImpl implements Indexer {
 
     public index(): { nextUrls: string[] } {
         const indexedData: IndexedData = {
-            title: new Set(),
-            description: new Set(),
-            keywords: new Set(),
-            headings: new Set(),
+            title: [],
+            description: [],
+            keywords: [],
+            headings: [],
         }
         const nextUrls = this.parser.getNextUrls({
             origin: this.origin,
@@ -25,14 +25,14 @@ export class IndexerImpl implements Indexer {
         const title = this.parser.getTitle();
         const meta = this.parser.getMetaData();
         const headings = this.parser.getHeadings();
-        indexedData.title = new Set([title]);
+        indexedData.title = [title];
         if (meta.description) {
-            indexedData.description = new Set([meta.description]);
+            indexedData.description = [meta.description];
         }
         if (meta.keywords) {
-            indexedData.keywords = new Set(meta.keywords.split(',').map(keyword => keyword.trim()));
+            indexedData.keywords = meta.keywords.split(',').map(keyword => keyword.trim());
         }
-        indexedData.headings = new Set(headings);
+        indexedData.headings = headings;
         this.saveIndex(this.origin, indexedData);
         return {
             nextUrls,
@@ -46,7 +46,7 @@ export class IndexerImpl implements Indexer {
 }
 
 type IndexedDataKey = 'title' | 'description' | 'keywords' | 'headings';
-export type IndexedData = Record<IndexedDataKey, Set<string>>;
+export type IndexedData = Record<IndexedDataKey, Array<string>>;
 export const IndexedData = (() => {
     const serialize = (indexedData: IndexedData) => {
         // 'Set' to serializable
@@ -65,9 +65,18 @@ export const IndexedData = (() => {
         return JSON.parse(serializedIndexedData);
     }
 
+    const merge = (currentIndexedData: IndexedData, newIndexedData: IndexedData) => {
+        const mergedIndexedData: IndexedData = { ...currentIndexedData };
+        Object.entries(newIndexedData).forEach(([key, value]) => {
+            mergedIndexedData[key as IndexedDataKey] = [...mergedIndexedData[key as IndexedDataKey], ...value];
+        });
+        return mergedIndexedData;
+    }
+
     return {
         serialize,
         deserialize,
+        merge,
     }
 })()
 

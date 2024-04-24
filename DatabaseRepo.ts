@@ -10,7 +10,7 @@ export default class DatabaseRepo {
         const createTableQuery = `
             CREATE TABLE IF NOT EXISTS ${tableName} (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                origin TEXT,
+                origin TEXT UNIQUE,
                 indexed_data TEXT
             );
         `;
@@ -24,8 +24,21 @@ export default class DatabaseRepo {
     static async writeIndex(origin: string, indexedData: IndexedData) {
         await this.ensureTableExists(this.INDEXED_DATA_TABLE_NAME);
         const serializedIndexedData = await this.serializeIndexedData(indexedData);
-        const query = this.db.prepare(`INSERT INTO ${this.INDEXED_DATA_TABLE_NAME} (origin, indexed_data) VALUES (?, ?)`);
-        query.run(origin, serializedIndexedData);
+
+        const rowExisted = this.db.prepare(`SELECT * FROM ${this.INDEXED_DATA_TABLE_NAME} WHERE origin = ?`);
+        const result = rowExisted.get(origin);
+        if (result) {
+            // 이미 origin에 대한 데이터가 있으면, 데이터를 update.
+            const currentIndexedData = IndexedData.deserialize((result as any)['indexed_data']);
+            const newIndexedData = IndexedData.merge(currentIndexedData, indexedData);
+            const serializedNewIndexedData = await this.serializeIndexedData(newIndexedData);
+            const query = this.db.prepare(`UPDATE ${this.INDEXED_DATA_TABLE_NAME} SET indexed_data = ? WHERE origin = ?`);
+            query.run(serializedNewIndexedData, origin);
+        } else {
+            // row가 없다면, 데이터를 insert.
+            const query = this.db.prepare(`INSERT INTO ${this.INDEXED_DATA_TABLE_NAME} (origin, indexed_data) VALUES (?, ?)`);
+            query.run(origin, serializedIndexedData);
+        }
     }
 
     static async getIndexedData(origin: string): Promise<IndexedData> {
