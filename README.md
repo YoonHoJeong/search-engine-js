@@ -62,4 +62,27 @@
   - 정보는 계속해서 추가하고,
   - index를 저장하는건 sqlite에 하자
     - bun은 자체 bun:sqlite가 있음
+- 24/04/24
+  - bun:sqlite 연결, indexed data 저장
+    - DatabaseRepo class
+      - 고수준 method 추가
+    - [Q] Database에 어떻게 저장하는게 좋은건가?
+      - DB Schema를 잘 짜는 법
+      - Search Engine에서의 DB
 
+# Study notes
+
+## Bun - SQLite
+1. Typescript - `using` keyword
+  - TS 5.2 부터 생김. using 키워드를 사용하면 해당 객체는 해당 스코프에서만 생명 주기를 갖는다.
+  - Symbol.dispose를 구현하면, 해당 스코프를 벗어날 때 원하는 작업을 호출할 수 있음.
+  - 파일 connection, DB Connection을 관리하는데 매우 유용해짐
+2. Serialize
+  - 복잡한 데이터 구조들을 전송가능한 형태로 변환하는 과정
+    - 네트워크, 파일 전송 과정에서 원하는 데이터를 유지하기 위해
+      -> 데이터 일관성과 무결성
+  - ex, 객체의 인스턴스를 JSON 형태로 변환
+3. in-memory Database
+  - 디스크에 데이터를 저장하지 않고, RAN 내에서 전체 데이터베이스를 운영하는 방식
+  - 해당 프로그램과 생명 주기가 같아서, 프로그램이 종료되면 데이터베이스도 사라진다.
+4. prepare

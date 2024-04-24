@@ -1,4 +1,4 @@
-import FileHandler from "./FileHandler";
+import DatabaseRepo from "./DatabaseRepo";
 import { Parser } from "./Parser";
 
 // indexing해서 저장하기
@@ -41,10 +41,33 @@ export class IndexerImpl implements Indexer {
 
     private saveIndex(origin: string, indexedData: IndexedData) {
         console.log('###saveIndex', origin);
-        const fileHandler = new FileHandler();
-        fileHandler.saveIndex(origin, indexedData);
+        DatabaseRepo.writeIndex(origin, indexedData);
     }
 }
 
 type IndexedDataKey = 'title' | 'description' | 'keywords' | 'headings';
 export type IndexedData = Record<IndexedDataKey, Set<string>>;
+export const IndexedData = (() => {
+    const serialize = (indexedData: IndexedData) => {
+        // 'Set' to serializable
+        const serializedIndexedData = Object.entries(indexedData).reduce((acc, [key, value]) => {
+            if (value instanceof Set) {
+                acc[key] = Array.from(value);
+            } else {
+                acc[key] = value;
+            }
+            return acc;
+        }, {} as any);
+
+        return JSON.stringify(serializedIndexedData);
+    }
+    const deserialize = (serializedIndexedData: string) => {
+        return JSON.parse(serializedIndexedData);
+    }
+
+    return {
+        serialize,
+        deserialize,
+    }
+})()
+
