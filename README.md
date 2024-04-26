@@ -5,15 +5,41 @@
 4. search algorithm
 5. ranking
 
-## 1. Crawler
-1. 웹 페이지를 방문
-1. html 긁어오기
-1. 다음에 크롤링할 nextUrls 가져오기
+# search engine 목표
+> 스타를 목표로 새로운 Google을 구축해보고 싶을 수도 있습니다. 하지만 수십억 개의 웹 페이지를 크롤링하려면 모든 데이터를 저장할 수 있는 용량은 말할 것도 없고 엄청난 양의 인프라와 컴퓨팅 파워가 필요합니다. - [how to create a serach engine](https://www.elastic.co/kr/blog/how-to-create-a-search-engine)
 
-## 2. Data Storage
-- 데이터 CRUD 역할
+1. 이 정보/콘텐츠를 찾는 이유
+  - 어떤 정보를 추가해둘 것인가?
+  - 좁은 범위의 데이터 소스를 가졌지만, 좀 더 풍부한 search engine
+  - **음식 - 회사 점심 의사결정 트리를 만들기 위해 사용할만한 맛집 리뷰들을 전부 모아본다**
+    - 블로그, 리뷰, 망고플레이트 등 전부다
+1. 관련성이 있는지 판단하기 위해 어떤 정보를 알아야 하나요?
+  - '속도', '맛', '건강' 3가지 factor
+    - 방법은 아직 잘 모르겠는데 embedding을 추출, 각 단어별 위 factor와 연관된 단어를 찾을 수 있으면 좋을 듯
+1. 어떤 결과가 다른 결과보다 더 나은지 어떻게 판단할 것인가?
+  - 결과를 검색하는건 위 3가지 factor. 다 같은 점수를 가질 수는 없을 것 같고, 사용자가 원하는 3가지 지표에 대한 점수가 있다.
+1. 가능한 한 유용하도록 결과를 어떻게 제시할 것인가?
+
+
+## 1. Crawler
+1. 웹 페이지를 방문, html 긁어오는 역할 수행
+1. 긁어올 데이터 - 지도 앱의 식당 리뷰들(특정 지역)
+  - google
+  - kakao
+  - naver
+
+## 2. Database
+- 어떤 Database를 사용할 것인가?
+  - elastic search
 
 ## 3. Indexing
+> 도서관에서와 마찬가지로 콘텐츠의 색인이 없으면 모든 콘텐츠가 어디에 있는지 알 수 없습니다. 인덱스는 데이터 소스에서 정보를 효율적으로 검색할 수 있도록 정리하고 저장하여 이를 수행합니다. 검색 엔진이 제대로 작동하려면 콘텐츠를 빠르게 식별하고, 순위를 매기고, 제공할 수 있어야 합니다. - [how to create a serach engine](https://www.elastic.co/kr/blog/how-to-create-a-search-engine)
+- 키워드: 페이지에서 찾은 단어 및 구문
+- 임베딩: 텍스트 데이터를 나타내는 다차원 벡터
+- 메타데이터: 페이지에 포함된 제목, 설명 및 기타 구조화된 데이터
+- 콘텐츠 분석: 페이지의 주제, 엔티티 및 전반적인 의미에 대한 이해
+- 백링크: 콘텐츠를 가리키는 다른 웹사이트의 링크
+
 - 어떤 정보를 읽어오고
   1. head > title
   1. meta > description
@@ -21,6 +47,7 @@
   1. headings - h1, h2, h3
 - 어떤 방법으로 정보를 Indexing할 것인지
 - normalize
+
 
 ## 4. Search Algorithm
 - 사용자 쿼리에 가장 관련성이 높은 결과 반환하기
@@ -69,6 +96,10 @@
     - [Q] Database에 어떻게 저장하는게 좋은건가?
       - DB Schema를 잘 짜는 법
       - Search Engine에서의 DB
+- 24/04/26
+  - data source를 어디서 얻으면 좋을까? 어떤 검색 엔진을 만들면 좋을까?
+  - internal vs external
+    
 
 # Study notes
 
@@ -86,3 +117,18 @@
   - 디스크에 데이터를 저장하지 않고, RAN 내에서 전체 데이터베이스를 운영하는 방식
   - 해당 프로그램과 생명 주기가 같아서, 프로그램이 종료되면 데이터베이스도 사라진다.
 4. prepare
+
+## Kagi(open source search engine)
+- external, internal(자체 구축) 두가지 data src를 씀
+- data source (external)
+  - anonymized API calls to traditional search indexes like Google, Yandex, Mojeek and Brave, specialized search engines like Marginalia, and sources of vertical information like Wolfram Alpha, Apple, Wikipedia, Open Meteo, Yelp, TripAdvisor and other APIs.
+- data source (internal)
+  - coming from our web index (internal name - Teclis) and news index (internal name - TinyGem). Kagi's indexes provide unique results that help you discover non-commercial websites and "small web" discussions surrounding a particular topic. Kagi's Teclis and TinyGem indexes are both available as an API.
+
+## small webs
+- [small-web](https://blog.kagi.com/small-web) [ben hoyt - the small web is beautiful](https://benhoyt.com/writings/the-small-web-is-beautiful/)
+  - 비상업적으로 올리는 웹페이지의 글들
+  - size가 작은 웹 사이트들
+
+# references 
+1. [how to create a search engine](https://www.elastic.co/kr/blog/how-to-create-a-search-engine)
